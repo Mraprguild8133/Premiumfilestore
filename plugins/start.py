@@ -7,7 +7,7 @@ Start command and file handling plugin
 import logging
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
+from pyrogram import FloodWait, UserIsBlocked, InputUserDeactivated
 from config import Config
 from helper_func import (
     encode, decode, get_name, get_media_file_size, get_hash, 
