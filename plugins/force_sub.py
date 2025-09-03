@@ -7,7 +7,7 @@ Force subscription management plugin
 import logging
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from pyrogram.errors import ChatAdminRequired, ChannelInvalid, PeerIdInvalid
+from pyrogram import ChatAdminRequired, ChannelInvalid, PeerIdInvalid
 from config import Config
 
 logger = logging.getLogger(__name__)
