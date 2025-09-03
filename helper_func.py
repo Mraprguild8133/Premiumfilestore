@@ -12,7 +12,7 @@ import aiofiles
 from typing import Union, List
 from pyrogram import Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
+from pyrogram import FloodWait, UserIsBlocked, InputUserDeactivated
 from config import Config
 import logging
 
