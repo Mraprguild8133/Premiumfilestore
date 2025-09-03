@@ -8,7 +8,7 @@ import logging
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, PeerIdInvalid
+from pyrogram import FloodWait, UserIsBlocked, InputUserDeactivated, PeerIdInvalid
 from config import Config
 from helper_func import send_msg, get_readable_time
 
