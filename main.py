@@ -12,7 +12,7 @@ import os
 from typing import Optional
 
 from pyrogram import Client
-from pyrogram.errors import UserDeactivated
+from pyrogram.errors import UserDeactivated, AuthKeyUnregistered
 
 # Configure logging
 logging.basicConfig(
@@ -30,21 +30,33 @@ class FileStoreBot:
     def __init__(self):
         self.bot: Optional[Client] = None
         self.shutdown_event = asyncio.Event()
-        self.token = os.getenv("TG_BOT_TOKEN")  # Changed to TG_BOT_TOKEN
+        self.token = os.getenv("TG_BOT_TOKEN")
         
         if not self.token:
-            logger.error("TG_BOT_TOKEN environment variable not set!")  # Updated error message
+            logger.error("TG_BOT_TOKEN environment variable not set!")
             sys.exit(1)
+            
+        # Remove any quotes or whitespace from the token
+        self.token = self.token.strip().strip('"').strip("'")
 
     async def validate_token(self):
         """Validate the bot token before starting"""
         try:
-            # Create a temporary client to validate the token
-            async with Client("temp_session", self.token) as temp_client:
+            logger.info(f"Attempting to validate token: {self.token[:10]}...")
+            
+            # Create a temporary client to validate the token with explicit parameters
+            async with Client(
+                name="temp_session",
+                api_id=1,  # Placeholder, we'll use get_me which doesn't need full auth
+                api_hash="placeholder",  # Placeholder
+                bot_token=self.token,
+                in_memory=True
+            ) as temp_client:
                 me = await temp_client.get_me()
-                logger.info(f"Token validated for bot: @{me.username}")
+                logger.info(f"Token validated for bot: @{me.username} (ID: {me.id})")
                 return True
-        except UserDeactivated:
+                
+        except (UserDeactivated, AuthKeyUnregistered):
             logger.error("""
             The bot token is invalid or the bot has been deactivated.
             Please check:
@@ -55,6 +67,7 @@ class FileStoreBot:
             return False
         except Exception as e:
             logger.error(f"Token validation failed: {e}")
+            logger.error(f"Token being used: {self.token}")
             return False
 
     async def start(self):
@@ -65,7 +78,13 @@ class FileStoreBot:
                 sys.exit(1)
             
             logger.info("Starting FileStore Bot...")
-            self.bot = Client("my_bot", bot_token=self.token)
+            # Initialize the client with proper parameters
+            self.bot = Client(
+                "my_bot_session",
+                bot_token=self.token,
+                api_id=1,  # You need to get actual API ID from https://my.telegram.org
+                api_hash="your_api_hash_here"  # You need to get actual API Hash
+            )
             
             # Set up signal handlers for graceful shutdown
             loop = asyncio.get_running_loop()
@@ -81,7 +100,7 @@ class FileStoreBot:
             # Keep the bot running until shutdown signal
             await self.shutdown_event.wait()
             
-        except UserDeactivated:
+        except (UserDeactivated, AuthKeyUnregistered):
             logger.error("""
             The bot token is invalid or the bot has been deactivated.
             Please check:
